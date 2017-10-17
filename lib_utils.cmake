@@ -86,15 +86,18 @@ function(merge_static_libs outputlib)
         endforeach ()
     endif ()
 
-    if (MSVC) # msvc's default linker lib.exe can merge libs
+    if (MSVC) 
+	# msvc's default linker lib.exe can merge libs
         set_target_properties(${outputlib} PROPERTIES STATIC_LIBRARY_FLAGS "${libfiles}")
 
-    elseif (APPLE) #OSX's libtool can merge libs
+    elseif (APPLE) 
+	#OSX's libtool can merge libs
         add_custom_command(TARGET ${outputlib} POST_BUILD
             COMMAND rm "$<TARGET_FILE:${outputlib}>"
             COMMAND /usr/bin/libtool -static -o "$<TARGET_FILE:${outputlib}>" ${libfiles})
 
-    else () # UNIX: we use "ar" to extract the obj files and combine them into a merged lib
+    else ()
+	#this should work on all posix systems 
 	#initially, or whenever a library changes, we create it's obj files using ar
 	#additionally, we create a dummy source file, that the merged library uses as an input src, making it a dependency
 	#by doing that, we achieve that when a sublibrary changes, only it and the merged lib need to be rebuilt	
