@@ -58,7 +58,9 @@ endfunction()
 #	add_library(tgt1 STATIC "src.c")
 #	find_library(ogl_path "opengl32")
 #	merge_static_libs(merged_lib tgt1 EXTERNAL ${ogl_path})
-#	add_executable(exec)
+#	
+#	##the merged lib can also be the final output, this is just to show that it's possible to use the target
+#	add_executable(exec merged_lib) 
 #
 function(merge_static_libs outputlib)
    set(ext_libs "")
