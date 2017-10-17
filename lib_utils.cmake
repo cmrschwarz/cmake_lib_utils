@@ -1,7 +1,8 @@
-#tells the linker to link to the static standard library instead of the dynamic one
-#this is a macro because we need to change the cmake variables in the current scope
-#SYNTAX:
-#set_static_stdlib()
+# tells the linker to link to the static standard library instead of the dynamic one
+# this is a macro because we need to change the cmake variables in the current scope
+# SYNTAX:
+#	set_static_stdlib()
+#
 macro(set_static_stdlib)
 	IF(GCC)
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static-libgcc")
@@ -22,14 +23,15 @@ endmacro()
 
 
 
-#returns full pathes to external libs using find_library
-#SYNTAX:
-#find_libs(output_list_name 
-#  [lib1 ... libN]
-#)
-#EXAMPLE:
-#find_libs(ext_lib_pathes opengl32 winmm pthreads)
-#MESSAGE(${ext_lib_pathes})
+# returns full pathes to external libs using find_library
+# SYNTAX:
+# 	find_libs(output_list_name 
+#  		[lib1 ... libN]
+#	)
+# EXAMPLE:
+#	find_libs(ext_lib_pathes opengl32 winmm pthreads)
+#	MESSAGE(${ext_lib_pathes})
+#
 function(find_libs output_list)
     list(REMOVE_AT ARGV 0)
     foreach (lib ${ARGV})
@@ -46,16 +48,22 @@ endfunction()
 
 # creates a merged lib that contains all the other passed libs.
 # the created target is correctly rebuilt when any dependency changes
-# merge_libs accepts targets that are static libs, and external libs as inputs
+# merge_static_libs accepts static cmake targets and external static libs as inputs
 # SYNTAX:
-# merge_libs(outputlib_target_name
-#  [static_lib_target1 .... static_lib_targetN]
-#  [EXTERNAL external_lib_path1 .... external_lib_pathN]
-#)
+#	merge_libs(outputlib_target_name
+#		[static_lib_target1 .... static_lib_targetN]
+#		[EXTERNAL external_lib_path1 .... external_lib_pathN]
+# 	)
+# EXAMPLE:
+#	add_library(tgt1 STATIC "src.c")
+#	find_library(ogl_path "opengl32")
+#	merge_static_libs(merged_lib tgt1 EXTERNAL ${ogl_path})
+#	add_executable(exec)
+#
 function(merge_static_libs outputlib)
    set(ext_libs "")
    set(tgt_libs "")
-    #input handling
+    # input handling
     list(REMOVE_AT ARGV 0)
     set(FOUND_EXTERNAL FALSE)
     foreach (lib ${ARGV})
@@ -91,17 +99,17 @@ function(merge_static_libs outputlib)
         set_target_properties(${outputlib} PROPERTIES STATIC_LIBRARY_FLAGS "${libfiles}")
 
     elseif (APPLE) 
-	#OSX's libtool can merge libs
+	# OSX's libtool can merge libs
         add_custom_command(TARGET ${outputlib} POST_BUILD
             COMMAND rm "$<TARGET_FILE:${outputlib}>"
             COMMAND /usr/bin/libtool -static -o "$<TARGET_FILE:${outputlib}>" ${libfiles})
 
     else ()
-	#this should work on all posix systems 
-	#initially, or whenever a library changes, we create it's obj files using ar
-	#additionally, we create a dummy source file, that the merged library uses as an input src, making it a dependency
-	#by doing that, we achieve that when a sublibrary changes, only it and the merged lib need to be rebuilt	
-	#we create the merged lib using the extracted obj files with ar and ranlib
+	# this should work on all posix systems 
+	# initially, or whenever a library changes, we create it's obj files using ar
+	# additionally, we create a dummy source file, that the merged library uses as an input src, making it a dependency
+	# by doing that, we achieve that when a sublibrary changes, only it and the merged lib need to be rebuilt	
+	# we create the merged lib using the extracted obj files with ar and ranlib
         set(MESS_DIR "${CMAKE_BINARY_DIR}/${outputlib}_mergefiles") #all our obj mess goes in this dir
         set(base_dummy_src "${MESS_DIR}/${outputlib}.dummy_src.c")
         add_custom_command(OUTPUT ${base_dummy_src}
