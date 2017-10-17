@@ -18,7 +18,7 @@ macro(set_static_stdlib)
 		endforeach()
 	ENDIF()
 	#TODO: more plattforms
-endfunction()
+endmacro()
 
 
 
