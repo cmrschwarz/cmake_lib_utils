@@ -1,3 +1,10 @@
+#LIB_UTILS: Tools for working with libraries in CMake.
+
+# add the following command to your CMakeLists.txt to use the functions:
+#      include(path_to_lib_utils/lib_utils.cmake)i
+
+
+
 # tells the linker to link to the static standard library instead of the dynamic one
 # this is a macro because we need to change the cmake variables in the current scope
 # SYNTAX:
