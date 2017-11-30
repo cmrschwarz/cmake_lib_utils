@@ -49,7 +49,7 @@ function(find_libs output_list)
         list(APPEND pathes ${lib_path})
         UNSET(lib_path CACHE)
     endforeach ()
-    set(${path_list} ${pathes} PARENT_SCOPE)
+    set(${output_list} ${pathes} PARENT_SCOPE)
 endfunction()
 
 
