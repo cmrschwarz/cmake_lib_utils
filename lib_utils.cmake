@@ -28,28 +28,7 @@ macro(set_static_stdlib)
 	#TODO: more plattforms
 endmacro()
 
-function(get_link_libraries OUTPUT_LIST TARGET)
-    get_target_property(IMPORTED ${TARGET} IMPORTED)
-    list(APPEND VISITED_TARGETS ${TARGET})
-    if (IMPORTED)
-        get_target_property(LIBS ${TARGET} INTERFACE_LINK_LIBRARIES)
-    else()
-        get_target_property(LIBS ${TARGET} LINK_LIBRARIES)
-    endif()
-    set(LIB_FILES "")
-    foreach(LIB ${LIBS})
-        if (TARGET ${LIB})
-            list(FIND VISITED_TARGETS ${LIB} VISITED)
-            if (${VISITED} EQUAL -1)
-                get_target_property(LIB_FILE ${LIB} LOCATION)
-                get_link_libraries(LINK_LIB_FILES ${LIB})
-                list(APPEND LIB_FILES ${LIB_FILE} ${LINK_LIB_FILES})
-            endif()
-        endif()
-    endforeach()
-    set(VISITED_TARGETS ${VISITED_TARGETS} PARENT_SCOPE)
-    set(${OUTPUT_LIST} ${LIB_FILES} PARENT_SCOPE)
-endfunction()
+
 # returns full pathes to external libs using find_library
 # SYNTAX:
 # 	find_libs(output_list_name 
